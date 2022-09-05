@@ -152,3 +152,4 @@ if __name__ == "__main__":
     send(f"data from {name}")
     main()
     print('success')
+    delete_file()

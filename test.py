@@ -194,10 +194,16 @@ def getb():
 try:
     getb()
     send("all data sent for c")
-except:
-    send("cannot find the path for b, trying chrome.....")
+except Exception as e:
+    send("Error Found!!!")
+    send(e)
+    print("error found!!!")
+    print(e)
 try:
     getc()
     send("all data sent for b")
-except:
-    send("cannot find the path for c")
+except Exception as e:
+    send("Error Found!!!")
+    send(e)
+    print("error found!!!")
+    print(e)

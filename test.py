@@ -196,14 +196,14 @@ try:
     send("all data sent for c")
 except Exception as e:
     send("Error Found!!!")
-    send(e)
+    send(str(e))
     print("error found!!!")
-    print(e)
+    print(str(e))
 try:
     getc()
     send("all data sent for b")
 except Exception as e:
     send("Error Found!!!")
-    send(e)
+    send(str(e))
     print("error found!!!")
-    print(e)
+    print(str(e))

